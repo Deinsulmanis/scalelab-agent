@@ -1,3 +1,4 @@
+process.on('uncaughtException', (err) => { console.error('Uncaught Exception:', err); });
 require("dotenv").config();
 const express      = require("express");
 const cors         = require("cors");
@@ -212,7 +213,11 @@ app.get("/api/leads", (req, res) => {
 });
 
 // ── Start server ──────────────────────────────────────────────────────────────
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`ScaleLab AI server running on port ${PORT}`);
-});
+try {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`ScaleLab AI server running on port ${PORT}`);
+  });
+} catch (err) {
+  console.error('Failed to start server:', err);
+}
