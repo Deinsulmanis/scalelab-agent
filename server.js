@@ -164,6 +164,8 @@ app.use(express.static(path.join(__dirname), {
 
 // ── POST /api/chat ────────────────────────────────────────────────────────────
 app.post("/api/chat", async (req, res) => {
+  console.log("Received chat request");
+  console.log("API Key being used:", process.env.ANTHROPIC_API_KEY?.substring(0, 20) + "...");
   const { messages } = req.body;
 
   if (!messages || !Array.isArray(messages)) {
