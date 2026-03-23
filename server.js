@@ -213,7 +213,6 @@ app.get("/api/leads", (req, res) => {
 
 // ── Start server ──────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`ScaleLab AI server running at http://localhost:${PORT}`);
-  console.log(`Leads viewer: http://localhost:${PORT}/api/leads`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`ScaleLab AI server running on port ${PORT}`);
 });
