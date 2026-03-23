@@ -1,5 +1,7 @@
 process.on('uncaughtException', (err) => { console.error('Uncaught Exception:', err); });
 require("dotenv").config();
+console.log("API KEY EXISTS:", !!process.env.ANTHROPIC_API_KEY);
+console.log("API KEY LENGTH:", process.env.ANTHROPIC_API_KEY?.length);
 const express      = require("express");
 const cors         = require("cors");
 const Anthropic    = require("@anthropic-ai/sdk");
