@@ -5,7 +5,7 @@
   // Read backend URL from the script tag: <script src="widget.js" data-backend="https://yourserver.com">
   const scriptTag  = document.currentScript ||
     [...document.querySelectorAll("script")].find(s => s.src && s.src.includes("widget.js"));
-  const BACKEND    = (scriptTag && scriptTag.getAttribute("data-backend")) || "http://localhost:3000";
+  const BACKEND    = (scriptTag && scriptTag.getAttribute("data-backend")) || "https://scalelab-agent-production.up.railway.app";
   const API_URL    = BACKEND.replace(/\/$/, "") + "/api/chat";
 
   // Guard against loading twice
