@@ -10,7 +10,7 @@ const path         = require("path");
 const fs           = require("fs");
 
 const app    = express();
-const client = new Anthropic.default({ apiKey: process.env.ANTHROPIC_API_KEY });
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // ── Mailer ────────────────────────────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
