@@ -1,0 +1,18 @@
+# Customer data
+leads.json
+
+# Environment variables — never commit these
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
