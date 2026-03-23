@@ -16,3 +16,7 @@ npm-debug.log*
 # OS files
 .DS_Store
 Thumbs.db
+
+# API key files — never commit these
+API Key.txt
+API Key 1.txt
