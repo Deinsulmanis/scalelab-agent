@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ScaleLab AI — Lead Response Agent</title>
+  <title>Beacon — 24/7 Booking Assistant</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -311,8 +311,8 @@
       </svg>
     </div>
     <div class="header-text">
-      <h1>ScaleLab AI</h1>
-      <p>Lead Response Agent</p>
+      <h1>Beacon</h1>
+      <p>24/7 Booking Assistant</p>
     </div>
     <div class="status-dot">
       <span></span>
@@ -337,7 +337,7 @@
         </svg>
       </button>
     </div>
-    <div class="input-hint">Powered by ScaleLab AI &mdash; Responses are AI-generated</div>
+    <div class="input-hint">Beacon &mdash; Responses are AI-generated</div>
   </div>
 
 </div>
@@ -567,7 +567,7 @@
       appendMessage("bot", opener);
     } catch (err) {
       removeTyping();
-      appendMessage("bot", "Hi! Thanks for reaching out to ScaleLab AI. What type of service are you looking for today — plumbing, electrical, or HVAC?");
+      appendMessage("bot", "Hi! I'm Beacon, your 24/7 booking assistant. What service can I help you with today?");
     } finally {
       setLoading(false);
       userInput.focus();

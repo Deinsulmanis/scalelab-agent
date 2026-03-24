@@ -336,8 +336,8 @@
         <svg viewBox="0 0 24 24"><path d="M12 2L14.5 9H22L16 13.5L18.5 20.5L12 16L5.5 20.5L8 13.5L2 9H9.5L12 2Z"/></svg>
       </div>
       <div id="sla-header-text">
-        <strong>ScaleLab AI</strong>
-        <span>Lead Response Agent</span>
+        <strong>Beacon</strong>
+        <span>24/7 Booking Assistant</span>
       </div>
       <div id="sla-status-dot"></div>
     </div>
@@ -349,7 +349,7 @@
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
       </div>
-      <div id="sla-footer">Powered by ScaleLab AI</div>
+      <div id="sla-footer">Powered by Beacon</div>
     </div>
   `;
 
@@ -469,7 +469,7 @@
     } catch (err) {
       removeTyping();
       addMessage("bot", "Sorry, something went wrong. Please try again.");
-      console.error("[ScaleLab Widget]", err.message);
+      console.error("[Beacon Widget]", err.message);
     } finally {
       setLoading(false);
       inputEl.focus();

@@ -28,11 +28,11 @@ async function sendLeadEmail(lead) {
   });
 
   await transporter.sendMail({
-    from    : `"ScaleLab AI" <${process.env.GMAIL_USER}>`,
+    from    : `"Beacon" <${process.env.GMAIL_USER}>`,
     to      : process.env.LEAD_NOTIFY_EMAIL,
     subject : `New Lead: ${lead.name} — ${lead.job_type}`,
     text: `
-New lead captured by ScaleLab AI Lead Agent
+New lead captured by Beacon
 ============================================
 Name:      ${lead.name}
 Phone:     ${lead.phone}
@@ -54,7 +54,7 @@ Log in to view all leads: http://localhost:${process.env.PORT || 3000}/api/leads
         <!-- Header -->
         <tr>
           <td style="padding:28px 32px;border-bottom:1px solid #0d2440;">
-            <p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#00D4FF;">ScaleLab AI</p>
+            <p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#00D4FF;">Beacon</p>
             <h1 style="margin:6px 0 0;font-size:20px;color:#e8f4f8;">New Lead Captured</h1>
           </td>
         </tr>
@@ -88,7 +88,7 @@ Log in to view all leads: http://localhost:${process.env.PORT || 3000}/api/leads
         <tr>
           <td style="padding:20px 32px;background:#071a2e;text-align:center;">
             <p style="margin:0;font-size:11px;color:#7da8be;">
-              Sent by ScaleLab AI Lead Response Agent
+              Sent by Beacon
             </p>
           </td>
         </tr>
@@ -127,28 +127,20 @@ async function saveLead(lead) {
 }
 
 // ── System prompt ─────────────────────────────────────────────────────────────
-const SYSTEM_PROMPT = `You are a friendly, professional lead qualification agent for ScaleLab AI, serving small trade businesses — plumbers, electricians, and HVAC technicians.
+const SYSTEM_PROMPT = `You are Beacon, a friendly 24/7 booking assistant. Your job is to:
+1. Welcome the visitor warmly
+2. Find out what service they need
+3. Ask for their location
+4. Ask for their preferred date and time for an estimate or callback
+5. Ask for their name and phone number
+6. Confirm all details and let them know the team will be in touch within 1 hour
 
-Your job is to qualify incoming service leads by collecting these four pieces of information ONE AT A TIME, in order:
-1. Job type (e.g., plumbing repair, electrical installation, HVAC service)
-2. Location / service area (city or zip code)
-3. Customer's full name
-4. Customer's phone number
+Keep responses short, friendly and professional. One question at a time.
 
-Rules you must follow:
-- Ask only ONE question per message — never combine questions.
-- Keep every response SHORT (1–3 sentences max).
-- Be warm and conversational, not robotic.
-- Once you have all four pieces of information, thank the customer and let them know a team member will be in touch shortly.
-- If the customer asks something unrelated, briefly redirect them back to the qualification process.
-- Never ask for payment info or any sensitive data beyond name and phone.
+IMPORTANT — When you have collected all five pieces (service needed, location, preferred date/time, name, phone), you MUST append the following marker on a new line at the very end of your final confirmation message, with no extra text after it:
+##LEAD##{"name":"<full name>","phone":"<phone number>","job_type":"<service needed>","location":"<location>"}
 
-IMPORTANT — When you have collected all four pieces (job type, location, name, phone), you MUST append the following marker on a new line at the very end of your response, with no extra text after it:
-##LEAD##{"name":"<full name>","phone":"<phone number>","job_type":"<job type>","location":"<location>"}
-
-Only append this marker once, on the final confirmation message. Do not include it in any other message.
-
-Start by greeting the customer and asking what type of job they need help with.`;
+Only append this marker once, on the final confirmation message. Do not include it in any other message.`;
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors());
@@ -220,7 +212,7 @@ app.get("/api/leads", (req, res) => {
 try {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`ScaleLab AI server running on port ${PORT}`);
+    console.log(`Beacon server running on port ${PORT}`);
   });
 } catch (err) {
   console.error('Failed to start server:', err);
