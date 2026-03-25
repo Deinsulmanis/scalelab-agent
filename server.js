@@ -195,10 +195,10 @@ app.post("/api/chat", async (req, res) => {
 
     res.json({ content: text });
 
-  } catch (err) {
-    console.error("Anthropic API error:", err.message);
-    const status = err.status || 500;
-    res.status(status).json({ error: err.message });
+  } catch (error) {
+    console.error("Chat error:", error);
+    const status = error.status || 500;
+    res.status(status).json({ error: error.message });
   }
 });
 
