@@ -189,15 +189,16 @@ app.post("/api/chat", async (req, res) => {
       const jsonStr = text.slice(markerIndex + MARKER.length).trim();
       text = text.slice(0, markerIndex).trim();
 
-      try {
-        const leadData = JSON.parse(jsonStr);
-        await saveLead({
-          ...leadData,
-          timestamp: new Date().toISOString(),
-        });
-      } catch (parseErr) {
-        console.error("Failed to parse lead JSON:", jsonStr, parseErr.message);
-      }
+      // Fire-and-forget — don't block the response waiting for email/disk I/O
+      setImmediate(() => {
+        try {
+          const leadData = JSON.parse(jsonStr);
+          saveLead({ ...leadData, timestamp: new Date().toISOString() })
+            .catch(err => console.error("Failed to save lead:", err.message));
+        } catch (parseErr) {
+          console.error("Failed to parse lead JSON:", jsonStr, parseErr.message);
+        }
+      });
     }
 
     res.json({ content: text });
