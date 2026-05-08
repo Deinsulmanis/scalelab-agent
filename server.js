@@ -28,16 +28,16 @@ async function sendLeadEmail(lead) {
   });
 
   await transporter.sendMail({
-    from    : `"Beacon" <${process.env.GMAIL_USER}>`,
+    from    : `"ScaleLab AI" <${process.env.GMAIL_USER}>`,
     to      : process.env.LEAD_NOTIFY_EMAIL,
-    subject : `New Lead: ${lead.name} — ${lead.job_type}`,
+    subject : `New Lead: ${lead.name} — ${lead.interest}`,
     text: `
-New lead captured by Beacon
+New lead captured by ScaleLab AI
 ============================================
 Name:      ${lead.name}
-Phone:     ${lead.phone}
-Job Type:  ${lead.job_type}
-Location:  ${lead.location}
+Email:     ${lead.email}
+Business:  ${lead.business}
+Interest:  ${lead.interest}
 Captured:  ${formatted}
 ============================================
 Log in to view all leads: http://localhost:${process.env.PORT || 3000}/api/leads
@@ -54,7 +54,7 @@ Log in to view all leads: http://localhost:${process.env.PORT || 3000}/api/leads
         <!-- Header -->
         <tr>
           <td style="padding:28px 32px;border-bottom:1px solid #0d2440;">
-            <p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#00D4FF;">Beacon</p>
+            <p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:#00D4FF;">ScaleLab AI</p>
             <h1 style="margin:6px 0 0;font-size:20px;color:#e8f4f8;">New Lead Captured</h1>
           </td>
         </tr>
@@ -65,9 +65,9 @@ Log in to view all leads: http://localhost:${process.env.PORT || 3000}/api/leads
             <table width="100%" cellpadding="0" cellspacing="0">
               ${[
                 ["Name",     lead.name],
-                ["Phone",    lead.phone],
-                ["Job Type", lead.job_type],
-                ["Location", lead.location],
+                ["Email",    lead.email],
+                ["Business", lead.business],
+                ["Interest", lead.interest],
                 ["Captured", formatted],
               ].map(([label, value]) => `
               <tr>
@@ -88,7 +88,7 @@ Log in to view all leads: http://localhost:${process.env.PORT || 3000}/api/leads
         <tr>
           <td style="padding:20px 32px;background:#071a2e;text-align:center;">
             <p style="margin:0;font-size:11px;color:#7da8be;">
-              Sent by Beacon
+              Sent by ScaleLab AI
             </p>
           </td>
         </tr>
@@ -127,18 +127,25 @@ async function saveLead(lead) {
 }
 
 // ── System prompt ─────────────────────────────────────────────────────────────
-const SYSTEM_PROMPT = `You are Beacon, a friendly 24/7 booking assistant. Your job is to:
-1. Welcome the visitor warmly
-2. Find out what service they need
-3. Ask for their location
-4. Ask for their preferred date and time for an estimate or callback
-5. Ask for their name and phone number
-6. Confirm all details and let them know the team will be in touch within 1 hour
+const SYSTEM_PROMPT = `You are an AI assistant for ScaleLab AI, a company that builds AI receptionists, automated lead response systems, and custom websites for growing businesses.
 
-Keep responses short, friendly and professional. One question at a time.
+Your job is to qualify inbound leads by having a short, friendly conversation. Follow these steps in order:
 
-IMPORTANT — When you have collected all five pieces (service needed, location, preferred date/time, name, phone), you MUST append the following marker on a new line at the very end of your final confirmation message, with no extra text after it:
-##LEAD##{"name":"<full name>","phone":"<phone number>","job_type":"<service needed>","location":"<location>"}
+1. Greet the visitor warmly and ask what brought them to ScaleLab AI today.
+2. Find out what type of business they run (e.g. real estate, home services, medical, legal, etc.).
+3. Ask what their biggest challenge is — choosing from: missing leads after hours, slow follow-up, no website, or wanting to automate their operations.
+4. Based on their answer, briefly mention which ScaleLab AI service fits best (AI receptionist, lead automation, or website build) — keep it to one sentence.
+5. Ask for their name and best email address so the team can send over a custom plan.
+6. Thank them and let them know the ScaleLab AI team will be in touch within 24 hours with a tailored strategy.
+
+Rules:
+- Keep every response short and conversational — 1-3 sentences max.
+- Ask only one question at a time.
+- Never mention pricing.
+- Sound like a knowledgeable human team member, not a bot.
+
+IMPORTANT — Once you have collected all four pieces of information (business type, main challenge, name, email), you MUST append the following marker on a new line at the very end of your final confirmation message, with no extra text after it:
+##LEAD##{"name":"<full name>","email":"<email address>","business":"<business type>","interest":"<what they need>"}
 
 Only append this marker once, on the final confirmation message. Do not include it in any other message.`;
 
