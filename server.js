@@ -4,6 +4,7 @@ const express      = require("express");
 const cors         = require("cors");
 const Anthropic    = require("@anthropic-ai/sdk");
 const nodemailer   = require("nodemailer");
+const twilio       = require("twilio");
 const path         = require("path");
 const fs           = require("fs");
 const crypto       = require("crypto");
@@ -19,6 +20,16 @@ const transporter = nodemailer.createTransport({
     pass: process.env.GMAIL_APP_PASSWORD,
   },
 });
+
+const smsConfig = {
+  accountSid: process.env.TWILIO_ACCOUNT_SID,
+  authToken: process.env.TWILIO_AUTH_TOKEN,
+  from: process.env.TWILIO_FROM_NUMBER,
+  to: process.env.LEAD_NOTIFY_PHONE,
+};
+const smsClient = smsConfig.accountSid && smsConfig.authToken
+  ? twilio(smsConfig.accountSid, smsConfig.authToken)
+  : null;
 
 async function sendLeadEmail(lead) {
   const formatted = new Date(lead.timestamp).toLocaleString("en-US", {
@@ -103,6 +114,35 @@ Lead data is available only through authenticated API access.
   console.log(`Lead email sent to ${process.env.LEAD_NOTIFY_EMAIL}`);
 }
 
+async function sendLeadSms(lead) {
+  if (!smsClient || !smsConfig.from || !smsConfig.to) {
+    console.warn("SMS notification skipped: Twilio is not fully configured");
+    return false;
+  }
+
+  const formatted = new Date(lead.timestamp).toLocaleString("en-CA", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: process.env.LEAD_NOTIFY_TIMEZONE || "America/Vancouver",
+  });
+
+  const message = await smsClient.messages.create({
+    from: smsConfig.from,
+    to: smsConfig.to,
+    body: [
+      "New qualified ScaleLab AI lead",
+      `Name: ${lead.name}`,
+      `Email: ${lead.email}`,
+      `Business: ${lead.business}`,
+      `Interest: ${lead.interest}`,
+      `Captured: ${formatted}`,
+    ].join("\n"),
+  });
+
+  console.log(`Lead SMS accepted by Twilio: ${message.sid}`);
+  return true;
+}
+
 // ── Leads file ───────────────────────────────────────────────────────────────
 const LEADS_FILE = path.join(__dirname, "leads.json");
 
@@ -118,10 +158,16 @@ async function saveLead(lead) {
   fs.writeFileSync(LEADS_FILE, JSON.stringify(leads, null, 2));
   console.log("Lead saved:", lead);
 
-  try {
-    await sendLeadEmail(lead);
-  } catch (err) {
-    console.error("Failed to send lead email:", err.message);
+  const notifications = await Promise.allSettled([
+    sendLeadEmail(lead),
+    sendLeadSms(lead),
+  ]);
+  const [emailResult, smsResult] = notifications;
+  if (emailResult.status === "rejected") {
+    console.error("Failed to send lead email:", emailResult.reason?.message || "Unknown error");
+  }
+  if (smsResult.status === "rejected") {
+    console.error("Failed to send lead SMS:", smsResult.reason?.message || "Unknown error");
   }
 }
 
