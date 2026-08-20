@@ -1,13 +1,12 @@
 process.on('uncaughtException', (err) => { console.error('Uncaught Exception:', err); });
 require("dotenv").config();
-console.log("API KEY EXISTS:", !!process.env.ANTHROPIC_API_KEY);
-console.log("API KEY LENGTH:", process.env.ANTHROPIC_API_KEY?.length);
 const express      = require("express");
 const cors         = require("cors");
 const Anthropic    = require("@anthropic-ai/sdk");
 const nodemailer   = require("nodemailer");
 const path         = require("path");
 const fs           = require("fs");
+const crypto       = require("crypto");
 
 const app    = express();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -40,7 +39,7 @@ Business:  ${lead.business}
 Interest:  ${lead.interest}
 Captured:  ${formatted}
 ============================================
-Log in to view all leads: http://localhost:${process.env.PORT || 3000}/api/leads
+Lead data is available only through authenticated API access.
     `.trim(),
     html: `
 <!DOCTYPE html>
@@ -164,7 +163,6 @@ app.use(express.static(path.join(__dirname), {
 // ── POST /api/chat ────────────────────────────────────────────────────────────
 app.post("/api/chat", async (req, res) => {
   console.log("Received chat request");
-  console.log("API Key being used:", process.env.ANTHROPIC_API_KEY?.substring(0, 20) + "...");
   const { messages } = req.body;
 
   if (!messages || !Array.isArray(messages)) {
@@ -212,6 +210,19 @@ app.post("/api/chat", async (req, res) => {
 
 // ── GET /api/leads ────────────────────────────────────────────────────────────
 app.get("/api/leads", (req, res) => {
+  const configuredKey = process.env.LEADS_API_KEY;
+  const suppliedKey = req.get("authorization")?.replace(/^Bearer\s+/i, "");
+
+  if (!configuredKey) {
+    return res.status(503).json({ error: "Lead access is not configured" });
+  }
+
+  const configured = Buffer.from(configuredKey);
+  const supplied = Buffer.from(suppliedKey || "");
+  if (configured.length !== supplied.length || !crypto.timingSafeEqual(configured, supplied)) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
   const leads = readLeads();
   res.json(leads);
 });
